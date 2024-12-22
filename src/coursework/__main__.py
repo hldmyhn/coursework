@@ -14,7 +14,7 @@ PEAK_HOURS: list[tuple] = [(7, 9), (17, 19)]
 DAYS_OF_WEEK: int = 7
 ROUTE_TIME: int = 60
 POPULATION_SIZE: int = 10
-MUTATION_RATE = 0.1
+MUTATION_RATE: float = 0.1
 GENERATIONS: int = 50
 TOURNAMENT_SIZE: int = 5
 ELITISM_COUNT: int = 5
@@ -308,7 +308,7 @@ class GeneticAlgorithm:
         return population
 
     def print_best_schedule(self, best_individual):
-        print("\nЛучшее расписание:")
+        print("\nРасписание:")
         for bus in sorted(best_individual, key=lambda bus: bus.id):
             print(f"\nАвтобус {bus.id}:")
 
@@ -361,9 +361,7 @@ class GreedyAlgorithm:
         self.drivers = drivers
         self.schedules = generate_driver_schedules(drivers)
         self.routes = create_routes()
-        self.driver_work_hours = defaultdict(
-            int,
-        )
+        self.driver_work_hours = defaultdict(int)
         self.driver_breaks = defaultdict(list)
 
     @staticmethod
@@ -519,7 +517,7 @@ class GreedyAlgorithm:
         return schedule
 
     def print_best_schedule(self, schedule):
-        print("\nРасписание (алгоритм влоб):")
+        print("\nРасписание:")
         for bus, bus_schedule in schedule.items():
             print(f"\nАвтобус {bus}:")
             for day in range(DAYS_OF_WEEK):
@@ -533,14 +531,14 @@ class GreedyAlgorithm:
                         break
 
                 if driver is None:
-                    print(f"  Day {day + 1}: No driver assigned")
+                    print(f"  День {day + 1}: Водитель не назначен")
                     continue
 
                 driver_key = (driver.type, driver.id)
-                print(f"  Day {day + 1}: Driver ({driver.id})")
+                print(f"  День {day + 1}: Driver ({driver.id})")
                 daily_schedule = self.schedules[driver_key][day]
                 if not daily_schedule:
-                    print("    Rest day")
+                    print("    День отдыха")
                     continue
 
                 for _, block in enumerate(daily_schedule):
@@ -613,7 +611,6 @@ def main():
     population = ga.evolve()
     fitnesses = [(ind, ga.fitness_function(ind)) for ind in population]
     best_individual = max(fitnesses, key=lambda x: x[1])[0]
-
     print("Статистика по водителям:")
     print(f"Водителей типа A: {num_type_a}")
     print(f"Водителей типа B: {num_type_b}")
@@ -642,7 +639,7 @@ def main():
         f"  Стандартное отклонение рабочих часов: {ga_metrics['workload_std_dev']:.2f}",
     )
     print(f"  Процент покрытия смен: {ga_metrics['coverage_percentage']:.2f}%")
-    print("\nЖадный Алгоритм:")
+    print("\nАлгоритм Влоб:")
     print(f"  Нарушения ограничений: {greedy_metrics['constraint_violations']}")
     print(
         f"  Стандартное отклонение рабочих часов: {greedy_metrics['workload_std_dev']:.2f}",
